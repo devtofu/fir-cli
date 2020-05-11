@@ -3,8 +3,10 @@
 module FIR
   module Config
     CONFIG_PATH   = "#{ENV['HOME']}/.fir-cli"
-    API_YML_PATH  = File.expand_path('../../', __FILE__) + '/api.yml'
-    APP_FILE_TYPE = %w(.ipa .apk).freeze
+    APP_INFO_PATH = "#{ENV['HOME']}/.fir-cli-app"
+    API_YML_PATH  = ENV['API_YML_PATH'] || File.expand_path('../../', __FILE__) + '/api.yml'
+    XCODE_WRAPPER_PATH  = File.expand_path('../../', __FILE__) + '/xcode_wrapper.sh'
+    APP_FILE_TYPE = %w(.ipa .apk .aab).freeze
 
     def fir_api
       @fir_api ||= YAML.load_file(API_YML_PATH).deep_symbolize_keys[:fir]
@@ -27,7 +29,12 @@ module FIR
       File.open(CONFIG_PATH, 'w+') { |f| f << YAML.dump(hash) }
     end
 
+    def write_app_info(hash)
+      File.open(APP_INFO_PATH, 'w+') { |f| f << YAML.dump(hash) }
+    end
+
     def current_token
+      return @token = ENV["API_TOKEN"] if ENV["API_TOKEN"]
       @token ||= config[:token] if config
     end
 

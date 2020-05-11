@@ -4,7 +4,7 @@ require_relative './util/http'
 require_relative './util/config'
 require_relative './util/parser/apk'
 require_relative './util/parser/ipa'
-require_relative './util/parser/pngcrush'
+require_relative './util/parser/aab_analysis'
 require_relative './util/login'
 require_relative './util/me'
 require_relative './util/info'
@@ -44,7 +44,7 @@ module FIR
       def check_file_exist(path)
         return if File.file?(path)
 
-        logger.error 'File does not exist'
+        logger.error "File does not exist: #{path}"
         exit 1
       end
 
@@ -59,7 +59,6 @@ module FIR
         return unless token.blank?
 
         logger.error 'Token can not be blank'
-        exit 1
       end
 
       def check_logined

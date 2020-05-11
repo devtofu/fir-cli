@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 module FIR
   class CLI < Thor
@@ -8,7 +8,7 @@ module FIR
     class_option :quiet,   type: :boolean, aliases: '-q', desc: 'Silence commands'
     class_option :help,    type: :boolean, aliases: '-h', desc: 'Show this help message and quit'
 
-    desc 'build_ipa BUILD_DIR [options] [settings]', 'Build iOS app (alias: `bi`).'
+    desc '(EXPIRED, PLEASE use fastlane instead) build_ipa BUILD_DIR [options] [settings]', 'Build iOS app (alias: `bi`).'
     long_desc <<-LONGDESC
       `build_ipa` command will auto build your project/workspace to an ipa package
       and it also can auto publish your built ipa to fir.im if use `-p` option.
@@ -24,23 +24,25 @@ module FIR
 
       $ fir bi <workspace dir> -w -S <scheme name> [-C <configuration>] [-t <target name>] [-o <ipa output dir>] [settings] [-c <changelog>] [-p -Q -T <your api token>]
     LONGDESC
-    map ['b', 'bi'] => :build_ipa
+    map %w[b bi] => :build_ipa
     method_option :branch,        type: :string,  aliases: '-B', desc: 'Set branch if project is a git repo, the default is `master`'
     method_option :workspace,     type: :boolean, aliases: '-w', desc: 'true/false if build workspace'
     method_option :scheme,        type: :string,  aliases: '-S', desc: 'Set the scheme NAME if build workspace'
     method_option :configuration, type: :string,  aliases: '-C', desc: 'Use the build configuration NAME for building each target'
-    method_option :destination,   type: :string,  aliases: '-d', desc: 'Set the destinationspecifier'
-    method_option :target,        type: :string,  aliases: '-t', desc: 'Build the target specified by targetname'
+    method_option :destination,   type: :string,  aliases: '-d', desc: 'Set the destination specifier'
+    method_option :target,        type: :string,  aliases: '-t', desc: 'Build the target specified by target name'
+    method_option :export_method, type: :string,  aliases: '-E', desc: 'for exportOptionsPlist method, ad-hoc as default'
+    method_option :optionPlistPath, type: :string, aliases: '-O', desc: 'User defined exportOptionsPlist path'
     method_option :profile,       type: :string,  aliases: '-f', desc: 'Set the export provisioning profile'
     method_option :output,        type: :string,  aliases: '-o', desc: 'IPA output path, the default is: BUILD_DIR/fir_build_ipa'
     method_option :publish,       type: :boolean, aliases: '-p', desc: 'true/false if publish to fir.im'
     method_option :short,         type: :string,  aliases: '-s', desc: 'Set custom short link if publish to fir.im'
-    method_option :name,          type: :string,  aliases: '-n', desc: 'Set custom ipa name when builded'
+    method_option :name,          type: :string,  aliases: '-n', desc: 'Set custom ipa name when built'
     method_option :changelog,     type: :string,  aliases: '-c', desc: 'Set changelog if publish to fir.im'
     method_option :qrcode,        type: :boolean, aliases: '-Q', desc: 'Generate qrcode'
     method_option :mapping,       type: :boolean, aliases: '-M', desc: 'true/false if upload app mapping file to BugHD.com'
     method_option :proj,          type: :string,  aliases: '-P', desc: 'Project id in BugHD.com if upload app mapping file'
-    method_option :open,          type: :boolean, desc: 'true/false if open for everyone, the default is: true', default: true
+    method_option :open,          type: :boolean, desc: 'true/false if open for everyone'
     method_option :password,      type: :string,  desc: 'Set password for app'
     def build_ipa(*args)
       prepare :build_ipa
@@ -92,6 +94,7 @@ module FIR
     long_desc <<-LONGDESC
       `publish` command will publish your app file to fir.im, also the command support to publish app's short & changelog.
 
+
       Example:
 
       $ fir p <app file path> [-c <changelog> -s <custom short link> -Q -T <your api token>]
@@ -104,10 +107,39 @@ module FIR
     method_option :short,       type: :string,  aliases: '-s', desc: 'Set custom short link'
     method_option :changelog,   type: :string,  aliases: '-c', desc: 'Set changelog'
     method_option :qrcode,      type: :boolean, aliases: '-Q', desc: 'Generate qrcode'
+    method_option :need_ansi_qrcode, type: :boolean, default: false, desc: 'Generate qrcode'
+    method_option :need_release_id, type: :boolean, aliases: '-R', default: false, desc: 'Add release id with fir url (WARNING: FIR ONLY SAVED 30 releases recently per app'
+
+    method_option :force_pin_history, type: :boolean, aliases: '-H', default: false, desc: 'pin this release to the download page by force'
+    method_option :skip_update_icon, type: :boolean, aliases: '-S', default: false, desc: 'skip update app icon'
+    method_option :specify_icon_file, type: :string, desc: 'specify icon file'
+
+    method_option :skip_fir_cli_feedback, type: :boolean, default: false, desc: 'skip fir-cli usage info feedback'
+
+    method_option :specify_app_display_name, type: :string, desc: 'specify app display name'
+
+    method_option :switch_to_qiniu, type: :boolean, default: false, aliases: '-N', desc: 'if app upload slowly, u can switch this option'
+    method_option :oversea_turbo, type: :boolean, default: false, desc: 'speed up uploading to oversea users'
+
     method_option :mappingfile, type: :string,  aliases: '-m', desc: 'App mapping file'
-    method_option :proj,        type: :string,  aliases: '-P', desc: 'Project id in BugHD.com if upload app mapping file'
-    method_option :open,        type: :boolean, desc: 'true/false if open for everyone, the default is: true', default: true
+    method_option :dingtalk_access_token, type: :string, aliases: '-D', desc: 'Send msg to dingtalk, only need access_token, not whole url'
+    method_option :dingtalk_custom_message, type: :string, desc: 'add custom message to dingtalk'
+    method_option :dingtalk_at_phones, type: :string, desc: 'at some phones, split by , eg: 13111111111,13111111112'
+    method_option :dingtalk_at_all, type: :boolean,  default: false
+
+    method_option :feishu_access_token, type: :string, desc: 'Send msg to feishu, need access_token, not whole url'
+    method_option :feishu_custom_message, type: :string, desc: 'add custom message to feishu'
+
+    method_option :wxwork_webhook, type: :string, desc: 'wxwork webhook url (optional)'
+    method_option :wxwork_access_token, type: :string, desc: 'Send msg to wxwork group, need group bot webhook, not whole url'
+    method_option :wxwork_custom_message, type: :string, desc: 'add custom message to wxwork group'
+    method_option :wxwork_pic_url, type: :string, desc: 'message background image, best size is 1068x455'
+
+    method_option :open,        type: :boolean, desc: 'true/false if open for everyone'
     method_option :password,    type: :string,  desc: 'Set password for app'
+
+    method_option :bundletool_jar_path, type: :string, desc: "upload aab file command:  to specify bundletool.jar if command bundletool can not run directly"
+    method_option :auto_download_bundletool_jar, type: :boolean, default: false, desc: "upload aab file command: would download bundletool when invoke bundletool failure"
     def publish(*args)
       prepare :publish
 
@@ -128,24 +160,6 @@ module FIR
       prepare :me
 
       FIR.me
-    end
-
-    desc 'mapping MAPPING_FILE_PATH', 'Upload app mapping file to BugHD.com (aliases: `m`).'
-    long_desc <<-LONGDESC
-      `mapping` command will upload your app's mapping file to BugHD.com if you have the same app/project in BugHD.com.
-
-      Example:
-
-      $ fir m <mapping file path> -P <bughd project id> -v <app version> -b <app build> -T <your fir api token>
-    LONGDESC
-    map 'm' => :mapping
-    method_option :proj,    type: :string, aliases: '-P', desc: 'Project id in BugHD.com'
-    method_option :version, type: :string, aliases: '-v', desc: 'App version'
-    method_option :build,   type: :string, aliases: '-b', desc: 'App build'
-    def mapping(*args)
-      prepare :mapping
-
-      FIR.mapping(*args, options)
     end
 
     desc 'upgrade', 'Upgrade fir-cli and quit (aliases: `u`).'
@@ -175,7 +189,7 @@ module FIR
         logfile = '/dev/null' if options[:quiet]
 
         FIR.logger       = Logger.new(logfile)
-        FIR.logger.level = options[:verbose] ? Logger::INFO : Logger::ERROR
+        FIR.logger.level = options[:verbose] ? Logger::DEBUG : Logger::ERROR
         super
       end
     end
@@ -185,7 +199,7 @@ module FIR
     def prepare(task)
       if options.help?
         help(task.to_s)
-        fail SystemExit
+        raise SystemExit
       end
       $DEBUG = true if ENV['DEBUG']
     end

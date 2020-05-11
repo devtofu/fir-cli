@@ -3,11 +3,13 @@
 fir-cli 使用 Ruby 构建, 无需编译, 只要安装相应 gem 即可.
 
 ```sh
-$ ruby -v # > 1.9.3
+$ ruby -v # > 2.6.1
 $ gem install fir-cli
 ```
 
 #### 常见的安装问题
+
+- ruby 要求最低版本为 2.3
 
 - 使用系统自带的 Ruby 安装, 需确保 ruby-dev 已被正确的安装:
 
@@ -22,22 +24,22 @@ $ gem install fir-cli
 
 - 出现 `Gem::RemoteFetcher::FetchError` 相关错误:
 
-  更换 Ruby 的淘宝源(由于国内网络原因, 你懂的), 并升级下系统自带的 gem
+  更换 Ruby 的源(由于国内网络原因, 你懂的), 并升级下系统自带的 gem
 
   ```sh
   $ gem sources --remove https://rubygems.org/
-  $ gem sources -a https://ruby.taobao.org/
+  $ gem sources -a https://gems.ruby-china.com/
   $ gem sources -l
   *** CURRENT SOURCES ***
 
-  https://ruby.taobao.org
-  # 请确保只有 ruby.taobao.org, 如果有其他的源, 请 remove 掉
+  https://gems.ruby-china.com
+  # 请确保只有 gems.ruby-china.com, 如果有其他的源, 请 remove 掉
 
   gem update --system
   gem install fir-cli
   ```
 
-- Mac OS X 10.11 以后的版本, 由于10.11引入了 `rootless`, 无法直接安装 fir-cli, 有以下三种解决办法:**
+- Mac OS X 10.11 以后的版本, 由于10.11引入了 `rootless`, 无法直接安装 fir-cli, 有以下三种解决办法:
 
   1\. 使用 [Homebrew](http://brew.sh/) 及 [RVM](https://rvm.io/) 安装 Ruby, 再安装 fir-cli(推荐)
 

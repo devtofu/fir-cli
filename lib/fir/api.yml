@@ -1,11 +1,7 @@
 fir:
-  domain:    'http://fir.im'
-  base_url:  'http://api.fir.im'
-  user_url:  'http://api.fir.im/user'
-  app_url:   'http://api.fir.im/apps'
-  udids_url: 'http://api.fir.im/devices/multi_udid'
-bughd:
-  domain:           'http://bughd.com'
-  base_url:         'http://api.bughd.com'
-  project_url:      'http://api.bughd.com/projects'
-  full_version_url: 'http://api.bughd.com/full_versions'
+  domain:    'http://www.betaqr.com'
+  base_url:  'http://fir-api.admqr.com'
+  user_url:  'http://fir-api.admqr.com/user'
+  app_url:   'http://fir-api.admqr.com/apps'
+  udids_url: 'http://fir-api.admqr.com/devices/multi_udid'
+  
